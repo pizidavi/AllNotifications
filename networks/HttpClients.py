@@ -38,6 +38,7 @@ class HttpxClient(HttpClient):
 class SeleniumClient(HttpClient):
 
     def __init__(self):
+        self.__chrome_version = os.getenv('CHROME_VERSION', None) or None
         self.__session = None
         self._start_session()
 
@@ -51,7 +52,7 @@ class SeleniumClient(HttpClient):
 
         options = uc.ChromeOptions()
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        self.__session = uc.Chrome(options=options, headless=True)
+        self.__session = uc.Chrome(options=options, version_main=self.__chrome_version, headless=True)
 
     def send(self, request: Request) -> str:
         url = str(request.url)
