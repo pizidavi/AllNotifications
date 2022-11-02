@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
 from datetime import datetime
+from abc import ABC, abstractmethod
 from httpx import Request
 
 from utils.logger import get_logger
@@ -175,7 +175,7 @@ class ComicProvider(BaseProvider):
                     logger.debug('Previous number (%s) is higher than: "%s". Skipped', _number_old, str(element))
                     continue
 
-            logger.debug('New: "%s" (found %s time)', str(element), len(items))
+            logger.info('New: "%s" (found %s time)', str(element), len(items))
 
             # Update new element's number
             for e in items:

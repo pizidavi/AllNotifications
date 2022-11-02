@@ -68,49 +68,6 @@ class View:
                 message.reply_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard),
                                    parse_mode=ParseMode.HTML)
                 message.delete()
-            # elif message_text.startswith('/list'):
-            #     text = '*Lista*\n'
-            #
-            #     for type_, provider in self.__providers.items():
-            #         elements = provider.get_elements()
-            #         if len(elements) == 0:
-            #             continue
-            #         text += f'\n*{type_.capitalize()}*\n'
-            #         for element in elements:
-            #             text += f'{element}\n'
-            #
-            #     inline_keyboard = [[InlineKeyboardButton(text='❌', callback_data='delete')]]
-            #     message.reply_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard))
-            #
-            # elif message_text.startswith('/add'):
-            #     if len(arguments) == 0:
-            #         message.reply_text('Use the command as follows:\n/add <type> <?arguments...>')
-            #         return
-            #     type_ = arguments[0]
-            #     if type_ not in self.__providers:
-            #         message.reply_text(f'Type `{arguments[0]}` does not exist')
-            #         return
-            #
-            #     result, error_message = self.__providers[type_].add_element(user['user_id'], arguments[1:])
-            #     if not result:
-            #         message.reply_text(f'*Error*\n`{error_message}`')
-            #     else:
-            #         message.reply_text('Element successfully added')
-            #
-            # elif message_text.startswith('/del') or message.text.startswith('/delete'):
-            #     if len(arguments) == 0:
-            #         message.reply_text('Use the command as follows:\n/del <type> <?arguments...>')
-            #         return
-            #     type_ = arguments[0]
-            #     if type_ not in self.__providers:
-            #         message.reply_text(f'Type `{arguments[0]}` does not exist')
-            #         return
-            #
-            #     result, error_message = self.__providers[type_].remove_element(user['user_id'], arguments[1:])
-            #     if not result:
-            #         message.reply_text(f'*Error*\n`{error_message}`')
-            #     else:
-            #         message.reply_text('Element successfully removed')
             else:
                 message.reply_text('Command not found')
 
@@ -164,7 +121,8 @@ class View:
     def __save_commands(self):
         telegram_commands = [(k, v if not callable(v) else (v.__doc__ or '??').strip())
                              for k, v in self.__commands.items()]
-        self.__updater.bot.set_my_commands(telegram_commands)
+        if len(telegram_commands) > 0:
+            self.__updater.bot.set_my_commands(telegram_commands)
 
     def stop(self):
         self.__updater.stop()
