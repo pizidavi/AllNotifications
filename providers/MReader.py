@@ -34,7 +34,7 @@ class MReader(ComicProvider):
         elements = []
         for entry in entries:
             anchor = entry.find('a', class_='list-body')
-            title = anchor.get('title').strip()
+            title = anchor.get('title').strip().replace('’', '\'')
             href = self.BASE_URL + anchor.get('href')
             number = anchor.find(class_='chapter-title').text.strip()\
                 .removeprefix('Chapter ').removesuffix('-eng-li').replace('-', '.')
