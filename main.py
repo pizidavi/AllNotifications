@@ -48,7 +48,7 @@ async def main():
             try:
                 elements = provider.updates_parser(response)
             except Exception as e:
-                logger.error('ParserException: %s', str(e))
+                logger.error('ParserException: %s', str(e), exc_info=True)
                 provider.logging.critical('ParserException', message=str(e))
             else:
                 if len(elements) == 0:
