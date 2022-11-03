@@ -29,7 +29,11 @@ class ReadM(ComicProvider):
             anchor = entry.find('h2').find('a')
             title = anchor.text.strip().replace("’", "'")
             href = self._fix_url(anchor.get('href'))
-            number = entry.find('ul', class_='chapters').find('li').find('a').text.strip()
+            chapter = entry.find('ul', class_='chapters').find('li')
+            if chapter is None:
+                continue
+            number = chapter.find('a').text.strip()
+
             elements.append(
                 ComicElement(title, href, number)
             )
