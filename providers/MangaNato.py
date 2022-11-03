@@ -23,10 +23,10 @@ class MangaNato(ComicProvider):
             anchor = entry.find(class_='item-title').find('a')
             title = anchor.text.strip().replace("’", "'")
             href = anchor.get('href')
-            number = entry.find(class_='item-chapter')
-            if number is None:
+            chapter = entry.find(class_='item-chapter')
+            if chapter is None:
                 continue
-            number = number.find('a').text.removeprefix('Chapter ').split(':')[0]
+            number = chapter.find('a').text.removeprefix('Chapter ').split(':')[0]
 
             elements.append(
                 ComicElement(title, href, number)
