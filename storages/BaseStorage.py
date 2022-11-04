@@ -43,11 +43,13 @@ class DBStorage(Storage):
         )
 
     @staticmethod
-    def _parse_dict(_dict: dict) -> list[str]:
-        def convert(key: tuple or str):
+    def _parse_dict(_dict: dict, table: str = None) -> list[str]:
+        table = table + '.' if table is not None else ''
+
+        def convert(key: str):
             if key.startswith('_'):
-                return f"`{key.lstrip('_')}` != %s"
-            return f'`{key}` = %s'
+                return f"{table}`{key.removeprefix('_')}` != %s"
+            return f'{table}`{key}` = %s'
         return [convert(key) for key in _dict.keys()]
 
     @staticmethod
@@ -71,7 +73,7 @@ class DBStorage(Storage):
         sql = "SELECT t.*, u.telegram_id " \
               f"FROM {self._type} t " \
               "JOIN users u ON u.user_id = t.user_id " + \
-              ("WHERE " + ' and '.join(self._parse_dict(kwargs)) if len(kwargs) else '')
+              ("WHERE " + ' and '.join(self._parse_dict(kwargs, 't')) if len(kwargs) else '')
         result = self._db.execute(sql, *kwargs.values())
         return self._to_array_dict(result)
 
@@ -79,7 +81,7 @@ class DBStorage(Storage):
         sql = "SELECT t.*, u.telegram_id " \
               f"FROM {self._type} t " \
               "JOIN users u ON u.user_id = t.user_id " + \
-              ("WHERE " + ' and '.join(self._parse_dict(kwargs)) if len(kwargs) else '')
+              ("WHERE " + ' and '.join(self._parse_dict(kwargs, 't')) if len(kwargs) else '')
         result = self._db.execute(sql, *kwargs.values())
         return self._to_dict(result)
 

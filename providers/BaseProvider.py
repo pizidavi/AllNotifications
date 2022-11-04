@@ -95,7 +95,7 @@ class ComicProvider(BaseProvider):
 
     def _get_elements(self, user_id: int, arguments: list[str]) -> str:
         """ List comics """
-        elements = self.STORAGE.get_elements()
+        elements = self.STORAGE.get_elements(user_id=user_id)
         elements.sort(key=lambda x: x.get('title'))
 
         message = '<b>Lista</b>\n\n'
