@@ -165,6 +165,8 @@ class ComicProvider(BaseProvider):
             items = self.STORAGE.get_elements(title=element.title, lang=self.LANG, disabled=0)
             if len(items) == 0:
                 continue
+            managed_elements.append(element)
+
             if items[0].get('number', None) is not None and items[0].get('number', None) == element.number:
                 continue
 
@@ -191,6 +193,5 @@ class ComicProvider(BaseProvider):
                     result = self.NOTIFIER.send(chat_id, message)
                     if not result:
                         logger.error('Failed to send notification for %s', str(element))
-            managed_elements.append(element)
 
         return managed_elements
