@@ -59,23 +59,23 @@ class ProviderLogging:
 
     def debug(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(DEBUG, id_, message) """
-        self.log(DEBUG, id_, f'*DEBUG*\nSource: %s\nReason: {message}' % self.__provider)
+        self.log(DEBUG, id_, f'*DEBUG*\nSource: %s\nReason: {message}' % self.__provider, force_send)
 
     def info(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(INFO, id_, message) """
-        self.log(INFO, id_, f'*INFO*\nSource: %s\nReason: {message}' % self.__provider)
+        self.log(INFO, id_, f'*INFO*\nSource: %s\nReason: {message}' % self.__provider, force_send)
 
     def warning(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(WARNING, id_, message) """
-        self.log(WARNING, id_, f'⚠️*WARNING*\nSource: %s\nReason: {message}' % self.__provider)
+        self.log(WARNING, id_, f'⚠️*WARNING*\nSource: %s\nReason: {message}' % self.__provider, force_send)
 
     def error(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(ERROR, id_, message) """
-        self.log(ERROR, id_, f'⛔ *ERROR*\nSource: %s\nReason: {message}' % self.__provider)
+        self.log(ERROR, id_, f'⛔ *ERROR*\nSource: %s\nReason: {message}' % self.__provider, force_send)
 
     def critical(self, id_: str, message: str, force_send: bool = True) -> None:
-        """ Alias of .log(CRITICAL, id_, message) """
-        self.log(CRITICAL, id_, f'⛔ *CRITICAL*\nSource: %s\nReason: {message}' % self.__provider)
+        """ Alias of .log(CRITICAL, id_, message, True) """
+        self.log(CRITICAL, id_, f'⛔ *CRITICAL*\nSource: %s\nReason: {message}' % self.__provider, force_send)
 
     def ok(self, id_: str, message: str = None):
         """ Alias of .remove(id_, message) """
