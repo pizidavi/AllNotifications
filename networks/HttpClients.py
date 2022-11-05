@@ -1,9 +1,11 @@
 import os
 import time
+import json
 from abc import ABC, abstractmethod
 
 from httpx import Client, Request
 import undetected_chromedriver as uc
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from utils import utils
 from networks.exceptions import *
@@ -52,11 +54,14 @@ class SeleniumClient(HttpClient):
 
         options = uc.ChromeOptions()
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
-        self.__session = uc.Chrome(options=options, version_main=self.__chrome_version, headless=True)
+        desired_capabilities = DesiredCapabilities.CHROME.copy()
+        desired_capabilities['goog:loggingPrefs'] = {'performance': 'ALL'}
+        self.__session = uc.Chrome(options=options, desired_capabilities=desired_capabilities,
+                                   version_main=self.__chrome_version, headless=True)
 
     def send(self, request: Request) -> str:
         url = str(request.url)
-        self.__session.get(url)
+        self._navigate_to(url)
 
         page_source = self.__session.page_source
 
@@ -72,6 +77,20 @@ class SeleniumClient(HttpClient):
                 raise CloudFlareException()
 
         return page_source
+
+    def _navigate_to(self, url):
+        self.__session.get(url)
+
+        response: dict or None = None
+        for entry in self.__session.get_log('performance'):
+            entry = json.loads(entry['message'])['message']
+            if entry['method'] == 'Network.responseReceived':
+                if entry['params']['response']['url'] == self.__session.current_url:
+                    response = entry['params']['response']
+        if response is None:
+            raise RequestException()
+        elif not (200 <= response.get('status', -1) <= 299):
+            raise RequestException(f"Status Code: {response['status']}")
 
     def __del__(self):
         if self.__session is not None:
