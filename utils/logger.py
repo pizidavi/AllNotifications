@@ -5,8 +5,8 @@ StreamHandler = logging.StreamHandler(sys.stdout)
 StreamHandler.setLevel(logging.INFO)
 StreamHandler.setFormatter(logging.Formatter('%(levelname)s:%(asctime)s: %(message)s'))
 
-FileHandler = logging.FileHandler('syslog.log')
-FileHandler.setLevel(logging.DEBUG)
+FileHandler = handlers.RotatingFileHandler('error.log', maxBytes=5000, backupCount=1)
+FileHandler.setLevel(logging.INFO)
 FileHandler.setFormatter(logging.Formatter('%(levelname)s:%(name)s:%(asctime)s:%(message)s'))
 
 

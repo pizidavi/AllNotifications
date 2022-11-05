@@ -25,7 +25,6 @@ NOTIFIER = Telegram()
 async def main():
     history: dict[str, set] = {}
 
-    logger.info('CHECKING STARTED')
     for provider in PROVIDERS:
         if provider.disabled:
             continue
@@ -61,6 +60,7 @@ async def main():
                         history[type_] = set()
                     history[type_].update(provider.manage_elements(elements, list(history[type_])))
     del history
+    print('----')
 
 
 async def safe_main():
