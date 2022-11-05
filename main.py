@@ -67,7 +67,7 @@ async def safe_main():
     try:
         await main()
     except Exception as e:
-        logger.exception(e)
+        logger.error(e)
 
 
 if __name__ == '__main__':

@@ -192,6 +192,6 @@ class ComicProvider(BaseProvider):
                 if chat_id is not None:
                     result = self.NOTIFIER.send(chat_id, message)
                     if not result:
-                        logger.error('Failed to send notification for %s', str(element))
+                        logger.error('Failed to send notification to %s for %s', chat_id, str(element))
 
         return managed_elements
