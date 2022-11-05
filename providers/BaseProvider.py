@@ -116,7 +116,7 @@ class ComicProvider(BaseProvider):
             return f'Less arguments than expected: 1 required but 0 given'
         element = {
             'user_id': user_id,
-            'title': arguments[0],
+            'title': arguments[0].replace('’', '\''),
             'lang': arguments[1] if len(arguments) >= 2 else 'en',
             'provider': arguments[2] if len(arguments) >= 3 else None
         }
