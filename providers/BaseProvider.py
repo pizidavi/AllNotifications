@@ -157,10 +157,6 @@ class ComicProvider(BaseProvider):
         managed_elements = []
 
         for element in elements:
-            if utils.find(lambda x: x == element, history):
-                logger.debug('Already managed: %s. Skipped', str(element))
-                continue
-
             # Find if is a tracked element and number is different
             items = self.STORAGE.get_elements(title=element.title, lang=self.LANG, disabled=0)
             if len(items) == 0:
@@ -168,6 +164,9 @@ class ComicProvider(BaseProvider):
             managed_elements.append(element)
 
             if items[0].get('number', None) is not None and items[0].get('number', None) == element.number:
+                continue
+            if utils.find(lambda x: x == element, history):
+                logger.debug('Already managed: %s. Skipped', str(element))
                 continue
 
             _number = utils.try_parse_regex(float, element.number or '')
