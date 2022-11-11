@@ -78,8 +78,8 @@ class View:
             logger.info('%s %s %s', 'callback_query', telegram_user.id, query.data)
 
             chat_id = query.message.chat_id
-            action, *data = query.data.split('|', 1)
-            data = (''.join(data)).split('-')
+            action, *data = query.data.removesuffix('|').split('|', 1)
+            data = (''.join(data)).removesuffix('-').split('-')
 
             if 'delete' == action:
                 for _message_id in data:
