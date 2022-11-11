@@ -1,4 +1,5 @@
 import os
+import re
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, ParseMode
 from telegram.ext import Updater, CallbackContext
 from telegram.ext import Defaults, Filters
@@ -47,7 +48,8 @@ class View:
                 text = f'Ciao {telegram_user.first_name} 👋'
                 message.reply_text(text)
             elif message_text.startswith('/'):
-                command, *arguments = message_text.removeprefix('/').replace('\n', ' ').split(' ')
+                command, *arguments = re.split(r'[ |\n]', message_text.removeprefix('/'), 1)
+                arguments = (''.join(arguments)).split('\n')
 
                 if command not in self.__commands:
                     message.reply_text('Command not found')
