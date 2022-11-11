@@ -49,7 +49,7 @@ class View:
                 message.reply_text(text)
             elif message_text.startswith('/'):
                 command, *arguments = re.split(r'[ |\n]', message_text.removeprefix('/'), 1)
-                arguments = (''.join(arguments)).split('\n')
+                arguments = [_ for _ in (''.join(arguments)).split('\n') if _ != '']
 
                 if command not in self.__commands:
                     message.reply_text('Command not found')
@@ -79,7 +79,7 @@ class View:
 
             chat_id = query.message.chat_id
             action, *data = query.data.removesuffix('|').split('|', 1)
-            data = (''.join(data)).removesuffix('-').split('-')
+            data = [_ for _ in (''.join(data)).removesuffix('-').split('-') if _ != '']
 
             if 'delete' == action:
                 for _message_id in data:
