@@ -45,7 +45,6 @@ class Telegram(Notifier):
                 retries += 1
                 logger.debug('NotifierException: %s | Retrying', exc)
                 time.sleep(2)
-        logger.error('NotifierException: %s | Aborted', exc)
         return False
 
     def __prepare_url(self, method: str, params: dict = None) -> str:

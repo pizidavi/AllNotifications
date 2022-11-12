@@ -87,7 +87,7 @@ class DBStorage(Storage):
 
     def set_element(self, element: dict) -> None:
         sql = f"INSERT INTO {self._type} (" + (','.join(element.keys())) + ") " \
-              "VALUES (" + ('%s,' * len(element.values())).rstrip(',') + ") "
+              "VALUES (" + ('%s,' * len(element.values())).removesuffix(',') + ") "
         self._db.execute(sql, *element.values())
         self._db.commit()
         if self._db.row_count == 0:
