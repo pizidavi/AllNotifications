@@ -173,7 +173,7 @@ class ComicProvider(BaseProvider):
             _number_old = utils.try_parse_regex(float, items[0].get('number', None) or '')
             if type(_number) == type(_number_old) == float:
                 if _number <= _number_old:
-                    logger.debug('Previous number (%s) is higher than: "%s". Skipped', _number_old, str(element))
+                    logger.debug('Previous number (%s) is higher or equal than: "%s". Skipped', _number_old, str(element))
                     continue
 
             logger.info('New: "%s" (found %s time)', str(element), len(items))
