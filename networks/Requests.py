@@ -1,5 +1,5 @@
-from httpx import Request
 from functools import wraps
+from requests import Request
 
 from utils.headers import get_random_header
 

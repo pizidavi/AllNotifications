@@ -1,9 +1,12 @@
 import os
 import time
 import json
+import socket
+import requests.packages.urllib3.util.connection as urllib3_cn
 from abc import ABC, abstractmethod
 
-from httpx import Client, Request
+import requests
+import httpx
 import undetected_chromedriver as uc
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
@@ -11,10 +14,18 @@ from utils import utils
 from networks.exceptions import *
 
 
+def allowed_gai_family():
+    """ Use only IPv4 for requests """
+    return socket.AF_INET
+
+
+urllib3_cn.allowed_gai_family = allowed_gai_family
+
+
 class HttpClient(ABC):
 
     @abstractmethod
-    def send(self, request: Request) -> str:
+    def send(self, request: requests.Request) -> str:
         """
         Send a request
         :param request: Request builder
@@ -23,18 +34,35 @@ class HttpClient(ABC):
         pass
 
 
-class HttpxClient(HttpClient):
+class RequestsClient(HttpClient):
 
     def __init__(self):
-        self.__session = Client()
+        self.__session = requests.Session()
 
-    def send(self, request: Request) -> str:
-        r = self.__session.send(request)
-        r.raise_for_status()
+    def send(self, request) -> str:
+        prepped = self.__session.prepare_request(request)
+        r = self.__session.send(prepped)
+        if not (200 <= r.status_code <= 299):
+            raise HTTPStatusError(r.status_code, request.url)
         return r.text
 
     def __del__(self):
         self.__session.close()
+
+
+class HttpxClient(HttpClient):
+
+    def __init__(self):
+        self.__client = httpx.Client(follow_redirects=True)
+
+    def send(self, request) -> str:
+        prepped = httpx.Request(request.method, request.url, headers=request.headers)
+        r = self.__client.send(prepped)
+        r.raise_for_status()
+        return r.text
+
+    def __del__(self):
+        self.__client.close()
 
 
 class SeleniumClient(HttpClient):
@@ -59,7 +87,7 @@ class SeleniumClient(HttpClient):
         self.__session = uc.Chrome(options=options, desired_capabilities=desired_capabilities,
                                    version_main=self.__chrome_version, headless=True)
 
-    def send(self, request: Request) -> str:
+    def send(self, request) -> str:
         url = str(request.url)
         self._navigate_to(url)
 
@@ -90,7 +118,7 @@ class SeleniumClient(HttpClient):
         if response is None:
             raise RequestException()
         elif not (200 <= response.get('status', -1) <= 299):
-            raise RequestException(f"Status Code: {response['status']}")
+            raise HTTPStatusError(response['status'], url)
 
     def __del__(self):
         if self.__session is not None:

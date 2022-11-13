@@ -4,7 +4,7 @@ from httpx import Request
 
 from utils.logger import get_logger
 from utils import utils
-from networks.HttpClients import HttpClient, HttpxClient
+from networks.HttpClients import HttpClient, RequestsClient
 from networks.Requests import get
 from storages.BaseStorage import Storage
 from storages.ComicsDBStorage import ComicsDBStorage
@@ -21,7 +21,7 @@ class BaseProvider(ABC):
     TYPE: str
 
     STORAGE: Storage
-    HTTP_CLIENT: HttpClient = HttpxClient()
+    HTTP_CLIENT: HttpClient = RequestsClient()
 
     NOTIFIER: Notifier
     NOTIFIER_MESSAGE: str
