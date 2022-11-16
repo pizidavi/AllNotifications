@@ -124,7 +124,8 @@ class ComicProvider(BaseProvider):
         try:
             self.STORAGE.set_element(element)
             logger.info('Added element: %s', element)
-            return f"<pre>{element['title']} ({element['lang']})</pre> has been successfully added"
+            _lang = utils.iso639_to_flag(element['lang'])
+            return f"<pre>{element['title']} ({_lang})</pre> has been successfully added"
         except Exception as e:
             logger.error(e)
             return f'<b>Error:</b> <pre>{e}</pre>'
