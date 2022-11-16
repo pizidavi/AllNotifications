@@ -41,17 +41,17 @@ async def main():
             provider.logging.ok('RequestException')
         except Exception as e:
             exception_message = str(e).split('\n')[0]  # Remove "For more information..."
-            logger.error('RequestException: %s', exception_message)
+            logger.error('RequestException: %s for %s', exception_message, name)
             provider.logging.error('RequestException', message=exception_message)
         else:
             try:
                 elements = provider.updates_parser(response)
             except Exception as e:
-                logger.error('ParserException: %s', str(e), exc_info=True)
+                logger.error('ParserException: %s for %s', str(e), name, exc_info=True)
                 provider.logging.critical('ParserException', message=str(e))
             else:
                 if len(elements) == 0:
-                    logger.error('ParserError: No elements found')
+                    logger.error('ParserError: No elements found for %s', name)
                     provider.logging.critical('ParserException', message='No elements found')
                 else:
                     provider.logging.ok('ParserException', message='Parsing successful')

@@ -34,16 +34,14 @@ class Telegram(Notifier):
 
         max_retries = 3
         retries = 0
-        exc = None
         while retries < max_retries:
             try:
                 url = self.__prepare_url('sendMessage', {'chat_id': chat_id, 'text': message})
                 response = httpx.get(url)
                 return response.json().get('ok', False)
             except Exception as e:
-                exc = str(e)
                 retries += 1
-                logger.debug('NotifierException: %s | Retrying', exc)
+                logger.debug('NotifierException: %s | Retrying', str(e))
                 time.sleep(2)
         return False
 
