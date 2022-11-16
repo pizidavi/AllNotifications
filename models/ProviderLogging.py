@@ -54,7 +54,7 @@ class ProviderLogging:
             found = max(found, self.__log[level][id_]) if not isinstance(self.__log[level][id_], bool) else True
             del self.__log[level][id_]
 
-        if (isinstance(found, bool) or found >= 3) and message is not None:
+        if (isinstance(found, bool) or found >= 3) and message:
             self.NOTIFIER.send(chat_id='owner', message=message)
 
     def debug(self, id_: str, message: str, force_send: bool = False) -> None:
@@ -79,4 +79,4 @@ class ProviderLogging:
 
     def ok(self, id_: str, message: str = None):
         """ Alias of .remove(id_, message) """
-        self.remove(id_, f'✅ *OK*\nSource: %s\nReason: {message}' % self.__provider)
+        self.remove(id_, f'✅ *OK*\nSource: %s%s' % (self.__provider, f'\nReason: {message}' if message else ''))
