@@ -11,6 +11,7 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from utils import utils
+from utils.logger import get_logger
 from networks.exceptions import *
 
 
@@ -20,6 +21,7 @@ def allowed_gai_family():
 
 
 urllib3_cn.allowed_gai_family = allowed_gai_family
+logger = get_logger(__name__)
 
 
 class HttpClient(ABC):
@@ -69,6 +71,7 @@ class SeleniumClient(HttpClient):
 
     def __init__(self):
         self.__chrome_version = os.getenv('CHROME_VERSION', None) or None
+        self.__max_retries = utils.try_parse(int, os.getenv('CLOUDFLARE_MAX_RETRIES'), 3)
         self.__session = None
         self._start_session()
 
@@ -92,18 +95,6 @@ class SeleniumClient(HttpClient):
         self._navigate_to(url)
 
         page_source = self.__session.page_source
-
-        max_retry = utils.try_parse(int, os.getenv('CLOUDFLARE_MAX_RETRIES'), 3)
-        retry = 0
-        while page_source.find('<title>Just a moment...</title>') >= 0:
-            time.sleep(5)
-            retry += 1
-            page_source = self.__session.page_source
-
-            if retry > max_retry:
-                self._start_session()
-                raise CloudFlareException()
-
         return page_source
 
     def _navigate_to(self, url):
@@ -117,6 +108,21 @@ class SeleniumClient(HttpClient):
                     response = entry['params']['response']
         if response is None:
             raise RequestException()
+        elif response.get('status', 200) == 503:
+            page_source = self.__session.page_source
+            retries = 0
+            while page_source.find('<title>Just a moment...</title>') >= 0:
+                logger.debug('CloudFlare detected' if retries == 0 else 'Failed bypass CloudFlare, retrying...')
+                time.sleep(5)
+
+                page_source = self.__session.page_source
+                retries += 1
+
+                if retries > self.__max_retries:
+                    self._start_session()
+                    raise CloudFlareException()
+            logger.debug('CloudFlare bypassed')
+
         elif not (200 <= response.get('status', -1) <= 299):
             raise HTTPStatusError(response['status'], url)
 
