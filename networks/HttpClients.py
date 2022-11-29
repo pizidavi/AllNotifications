@@ -72,16 +72,6 @@ class SeleniumClient(HttpClient):
     def __init__(self):
         self.__chrome_version = os.getenv('CHROME_VERSION', None) or None
         self.__max_retries = utils.try_parse(int, os.getenv('CLOUDFLARE_MAX_RETRIES'), 3)
-        self.__session = None
-        self._start_session()
-
-    def _start_session(self):
-        if self.__session is not None:
-            try:
-                self.__session.delete_all_cookies()
-                self.__session.quit()
-            except Exception:
-                pass
 
         options = uc.ChromeOptions()
         options.add_argument('--no-first-run --no-service-autorun --password-store=basic')
@@ -112,14 +102,15 @@ class SeleniumClient(HttpClient):
             page_source = self.__session.page_source
             retries = 0
             while page_source.find('<title>Just a moment...</title>') >= 0:
-                logger.debug('CloudFlare detected' if retries == 0 else 'Failed bypass CloudFlare, retrying...')
+                logger.debug('CloudFlare detected, waiting...' if retries == 0 else 'Failed bypass CloudFlare, retrying...')
                 time.sleep(5)
 
                 page_source = self.__session.page_source
                 retries += 1
 
-                if retries > self.__max_retries:
-                    self._start_session()
+                if retries >= self.__max_retries:
+                    self.__session.save_screenshot('./error-screen.png')
+                    self.__session.delete_all_cookies()
                     raise CloudFlareException()
             logger.debug('CloudFlare bypassed')
 
