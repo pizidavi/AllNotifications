@@ -1,4 +1,7 @@
+import re
+
 from utils.utils import soupify
+from networks.Requests import get
 from networks.exceptions import NotFoundException
 from models.Element import ComicElement
 from providers import ComicProvider
@@ -10,6 +13,22 @@ class MangaWorld(ComicProvider):
     NAME = 'MangaWorld'
     LANG = 'it'
     ICON = '📕'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.__cookies = {}
+
+    def updates_request(self):
+        return get(f'{self.BASE_URL}/', cookies=self.__cookies)
+
+    def manage_response(self, response: str) -> str:
+        regex = r'document.cookie="MWCookie=(\w+)\s?;'
+        match = re.findall(regex, response)
+        if len(match):
+            self.__cookies['MWCookie'] = match[0]
+            request = get(f'{self.BASE_URL}/?d=1', cookies=self.__cookies)
+            response = self.HTTP_CLIENT.send(request)
+        return response
 
     def updates_parser(self, response: str) -> list[ComicElement]:
         document = soupify(response)
