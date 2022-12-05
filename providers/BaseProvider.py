@@ -40,6 +40,9 @@ class BaseProvider(ABC):
         """
         return get(f'{self.BASE_URL}/')
 
+    def manage_response(self, response: str) -> str:
+        return response
+
     @abstractmethod
     def updates_parser(self, response: str) -> list[Element]:
         """
@@ -125,7 +128,7 @@ class ComicProvider(BaseProvider):
             self.STORAGE.set_element(element)
             logger.info('Added element: %s', element)
             _lang = utils.iso639_to_flag(element['lang'])
-            return f"<pre>{element['title']} ({_lang})</pre> has been successfully added"
+            return f"<pre>{element['title']} {_lang}</pre> has been successfully added"
         except Exception as e:
             logger.error(e)
             return f'<b>Error:</b> <pre>{e}</pre>'

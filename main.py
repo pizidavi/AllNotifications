@@ -37,6 +37,7 @@ async def main():
         try:
             request = provider.updates_request()
             response = http_client.send(request)
+            response = provider.manage_response(response)
 
             provider.logging.ok('RequestException')
         except Exception as e:
