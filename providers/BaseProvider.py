@@ -105,11 +105,9 @@ class ComicProvider(BaseProvider):
         for element in elements:
             flag = utils.iso639_to_flag(element.get('lang'))
             style = ('<s>', '</s>') if element.get('disabled') == 1 else ('', '')
-            suffix = ''
-            if element.get('last_update') is None or \
-                    (datetime.now() - element.get('last_update')).days > 60:
-                suffix = '❗'
-            message += f"{flag} {style[0]}{element.get('title')}{style[1]} {suffix}\n"
+            suffix = '❗' if element.get('last_update') is None or \
+                            (datetime.now() - element.get('last_update')).days > 60 else ''
+            message += f"{flag} {style[0]}{element.get('title')}{style[1]} {suffix} ({element.get('element_id')})\n"
         message += f'\nTotale: {len(elements)}'
         return message
 
@@ -169,16 +167,17 @@ class ComicProvider(BaseProvider):
 
             if items[0].get('number', None) is not None and items[0].get('number', None) == element.number:
                 continue
-            if utils.find(lambda x: x == element, history):
-                logger.debug('Already managed: %s. Skipped', str(element))
-                continue
 
             _number = utils.try_parse_regex(float, element.number or '')
             _number_old = utils.try_parse_regex(float, items[0].get('number', None) or '')
             if type(_number) == type(_number_old) == float:
                 if _number <= _number_old:
-                    logger.debug('Previous number (%s) is higher or equal than: "%s". Skipped', _number_old, str(element))
+                    logger.debug('Previous number (%s) is higher or equal than: "%s". Skipped', _number_old,
+                                 str(element))
                     continue
+            if utils.find(lambda x: x == element, history):
+                logger.info('Already managed: %s. Skipped', str(element))
+                continue
 
             logger.info('New: "%s" (found %s time)', str(element), len(items))
 
