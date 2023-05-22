@@ -159,6 +159,8 @@ class ComicProvider(BaseProvider):
         managed_elements = []
 
         for element in elements:
+            element.number = element.number[:50]
+
             # Find if is a tracked element and number is different
             items = self.STORAGE.get_elements(title=element.title, lang=self.LANG, disabled=0)
             if len(items) == 0:

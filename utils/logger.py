@@ -3,7 +3,7 @@ import logging
 import logging.handlers as handlers
 
 StreamHandler = logging.StreamHandler(sys.stdout)
-StreamHandler.setLevel(logging.INFO)
+StreamHandler.setLevel(logging.DEBUG)
 StreamHandler.setFormatter(logging.Formatter('%(levelname)s:%(asctime)s: %(message)s'))
 
 FileHandler = handlers.RotatingFileHandler('syslog.log', maxBytes=200000, backupCount=1)

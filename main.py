@@ -1,6 +1,8 @@
 import os
+import time
 import asyncio
 from dotenv import load_dotenv
+from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from utils.logger import get_logger, set_level
@@ -83,6 +85,12 @@ if __name__ == '__main__':
         MangaWorldAdult(register_commands=view.register_commands),
         Manhwax(register_commands=view.register_commands),
     ]
+
+    timeout_minutes = 5
+    current_time = datetime.now()
+    wait_time = timeout_minutes * 60 - (current_time.minute % timeout_minutes)*60 - current_time.second
+    logger.debug('Starting in %s seconds', wait_time)
+    time.sleep(wait_time)
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(safe_main, 'interval', minutes=10)
