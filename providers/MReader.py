@@ -26,7 +26,7 @@ class MReader(ComicProvider):
     def updates_parser(self, response) -> list[ComicElement]:
         document = soupify(response)
 
-        entries = document.find(class_='novel-list')
+        entries = document.find(class_='chapters')
         if entries is None:
             raise NotFoundException()
         entries = entries.find_all(class_='novel-item')
