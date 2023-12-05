@@ -10,8 +10,8 @@ from providers import ComicProvider
 
 class MReader(ComicProvider):
 
-    BASE_URL = 'https://www.mangageko.com'
-    NAME = 'MReader'
+    BASE_URL = 'https://www.mgeko.com'
+    NAME = 'MangaGeko'
     LANG = 'en'
     ICON = '📗'
     HTTP_CLIENT: HttpClient = None
