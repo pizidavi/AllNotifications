@@ -9,6 +9,7 @@ from utils.logger import get_logger, set_level
 from notifiers.NotifierClients import Telegram
 from controls.View import View
 
+from providers import BaseProvider
 from providers.MReader import MReader
 from providers.ReadM import ReadM
 from providers.MangaNato import MangaNato
@@ -61,9 +62,10 @@ async def main():
 
                     if history.get(type_, None) is None:
                         history[type_] = set()
-                    history[type_].update(provider.manage_elements(elements, list(history[type_])))
+
+                    managed_elements = provider.manage_elements(elements, list(history[type_]))
+                    history[type_].update(managed_elements)
     del history
-    print('----')
 
 
 async def safe_main():
@@ -86,11 +88,12 @@ if __name__ == '__main__':
         Manhwax(register_commands=view.register_commands),
     ]
 
-    timeout_minutes = 5
-    current_time = datetime.now()
-    wait_time = timeout_minutes * 60 - (current_time.minute % timeout_minutes)*60 - current_time.second
-    logger.debug('Starting in %s seconds', wait_time)
-    time.sleep(wait_time)
+    if os.getenv('ENV', 'prod') != 'dev':
+        timeout_minutes = 5
+        current_time = datetime.now()
+        wait_time = timeout_minutes * 60 - (current_time.minute % timeout_minutes) * 60 - current_time.second
+        logger.debug('Starting in %s seconds', wait_time)
+        time.sleep(wait_time)
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(safe_main, 'interval', minutes=10)

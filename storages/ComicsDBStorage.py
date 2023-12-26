@@ -3,7 +3,7 @@ from storages import DBStorage
 
 class ComicsDBStorage(DBStorage):
 
-    def search_elements_by_title(self, title) -> list[dict]:
+    def search_elements_by_title(self, title: str) -> list[dict]:
         sql = "SELECT * " \
               f"FROM {self._type} " \
               "WHERE title LIKE %s"
