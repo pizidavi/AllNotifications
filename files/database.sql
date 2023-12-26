@@ -19,3 +19,11 @@ CREATE TABLE `comics` (
   FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`),
   UNIQUE (`user_id`,`title`,`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `comics_ignored` (
+  `element_id` int(11) NOT NULL AUTO_INCREMENT,
+  `provider` varchar(5) DEFAULT NULL,
+  `createdAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`element_id`, `provider`),
+  FOREIGN KEY (`element_id`) REFERENCES `comics`(`element_id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
