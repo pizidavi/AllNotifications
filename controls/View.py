@@ -21,6 +21,7 @@ class View:
         self.__commands = {
             'start': 'Start the bot',
         }
+        self.__callbacks = {}
 
         self.__updater = Updater(token, defaults=Defaults(parse_mode=ParseMode.MARKDOWN_V2))
         self.__updater.dispatcher.add_handler(MessageHandler(Filters.chat_type, self.__handler))
@@ -85,9 +86,13 @@ class View:
                 for _message_id in data:
                     _.bot.delete_message(chat_id=chat_id, message_id=_message_id)
                 query.delete_message()
+                query.answer()
+
+            elif action in self.__callbacks:
+                self.__callbacks[action](query, data)
+
             else:
                 query.answer('Command not found', show_alert=True)
-            query.answer()
 
     @staticmethod
     def __handler_error(update, context: CallbackContext):
@@ -119,6 +124,17 @@ class View:
                 found = True
         if found:
             self.__save_commands()
+
+    def register_callbacks(self, type_: str, callbacks: list[tuple[str, callable]]) -> None:
+        """
+        Register more callbacks in View
+        :param type_: Provider's TYPE
+        :param callbacks: List of tuple(callback name, function to be called)
+        """
+        for callback, func in callbacks:
+            callback = f'{callback}_{type_}'
+            if callback not in self.__callbacks:
+                self.__callbacks[callback] = func
 
     def __save_commands(self):
         telegram_commands = [(k, v if not callable(v) else (v.__doc__ or '??').strip())
