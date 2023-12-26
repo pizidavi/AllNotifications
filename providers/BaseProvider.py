@@ -26,12 +26,13 @@ class BaseProvider(ABC):
     NOTIFIER: Notifier
     NOTIFIER_MESSAGE: str
 
-    def __init__(self, register_commands: callable = None, disabled: bool = False):
+    def __init__(self, register_commands: callable = None, register_callbacks: callable = None, disabled: bool = False):
         self.NOTIFIER = Telegram()
 
         self.logging: ProviderLogging = ProviderLogging(self.NAME, self.NOTIFIER)
         self.disabled = disabled
         self._register_commands = register_commands or (lambda t, c: None)
+        self._register_callbacks = register_callbacks or (lambda t, c: None)
 
     def updates_request(self) -> Request:
         """
@@ -89,12 +90,14 @@ class ComicProvider(BaseProvider):
 
         self.STORAGE: ComicsDBStorage = ComicsDBStorage(self.TYPE)
 
-        commands = [
+        self._register_commands(self.TYPE, [
             ('list', self._get_elements),
             ('add', self._add_element),
             ('del', self._remove_element)
-        ]
-        self._register_commands(self.TYPE, commands)
+        ])
+        self._register_callbacks(self.TYPE, [
+            ('ignore', self._ignore_element)
+        ])
 
     def _get_elements(self, user_id: int, arguments: list[str]) -> str:
         """ List comics """
@@ -149,6 +152,25 @@ class ComicProvider(BaseProvider):
             logger.error(e)
             return f'<b>Error:</b> <pre>{e}</pre>'
 
+    def _ignore_element(self, query, data: list[str]) -> str or bool or None:
+        """ Ignore comic """
+        provider, element_id, element_previous_number = data
+
+        try:
+            self.STORAGE.set_ignored_element(element_id, provider)
+        except Exception as e:
+            logger.error(e)
+            return query.answer(f'<b>Error:</b> <pre>{e}</pre>')
+    
+        try:
+            self.STORAGE.set_element_number(element_id, element_previous_number)
+        except Exception as e:
+            logger.error(e)
+            return query.answer(f'<b>Error:</b> <pre>{e}</pre>')
+
+        query.answer('Element will be ignored')
+        query.delete_message()
+
     @abstractmethod
     def updates_parser(self, response: str) -> list[ComicElement]:
         pass
@@ -157,6 +179,7 @@ class ComicProvider(BaseProvider):
         if history is None:
             history = []
         managed_elements = []
+        ignored_elements = self.STORAGE.get_ignored_elements()
 
         for element in elements:
             element.number = element.number[:50]
@@ -164,6 +187,15 @@ class ComicProvider(BaseProvider):
             # Find if is a tracked element and number is different
             items = self.STORAGE.get_elements(title=element.title, lang=self.LANG, disabled=0)
             if len(items) == 0:
+                continue
+
+            if utils.find(
+                lambda x: utils.find(
+                    lambda y: y.get('element_id') == x.get('element_id') and y.get('provider') == self.KEY,
+                    ignored_elements),
+                items
+            ):
+                logger.debug('Element %s is ignored', str(element))
                 continue
             managed_elements.append(element)
 
@@ -193,8 +225,13 @@ class ComicProvider(BaseProvider):
                                                        title=element.title + (f' {_lang}' if _lang != '' else ''),
                                                        number=element.number,
                                                        url=element.url)
+                inline_keyboard = [[{
+                    'text': 'Ignore',
+                    # Format: ignore|provider-element_id-element_previous_number
+                    'callback_data': f'ignore_comics|{e.get("provider")}-{e.get("element_id")}-{items[0].get("number", "")}'
+                }]]
                 if chat_id is not None:
-                    result = self.NOTIFIER.send(chat_id, message)
+                    result = self.NOTIFIER.send(chat_id, message, inline_keyboard)
                     if not result:
                         logger.error('Failed to send notification to %s for %s', chat_id, str(element))
 

@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import urllib.parse
 import httpx
 from abc import ABC, abstractmethod
@@ -28,7 +29,7 @@ class Telegram(Notifier):
     def __init__(self, token: str = None):
         self.__token = token if token is not None else os.getenv('TELEGRAM_TOKEN')
 
-    def send(self, chat_id: str, message: str) -> bool:
+    def send(self, chat_id: str, message: str, inline_keyboard: list[list[dict]] = None) -> bool:
         if type(chat_id) == str and chat_id == 'owner':
             chat_id = os.getenv('ADMIN_CHAT_ID')
 
@@ -36,7 +37,12 @@ class Telegram(Notifier):
         retries = 0
         while retries < max_retries:
             try:
-                url = self.__prepare_url('sendMessage', {'chat_id': chat_id, 'text': message})
+                inline_keyboard = json.dumps(inline_keyboard if inline_keyboard is not None else [])
+                url = self.__prepare_url('sendMessage', {
+                    'chat_id': chat_id,
+                    'text': message,
+                    'reply_markup': '{"inline_keyboard": ' + inline_keyboard + '}',
+                })
                 response = httpx.get(url)
                 return response.json().get('ok', False)
             except Exception as e:
