@@ -13,6 +13,7 @@ from providers import BaseProvider
 from providers.MReader import MReader
 from providers.ReadM import ReadM
 from providers.MangaNato import MangaNato
+from providers.MangaDex import MangaDex, MangaDexIT
 from providers.MangaWorld import MangaWorld
 from providers.MangaWorldAdult import MangaWorldAdult
 from providers.Manhwax import Manhwax
@@ -79,10 +80,12 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     view = View()
 
-    PROVIDERS = [
+    PROVIDERS: list[BaseProvider] = [
         MReader(register_commands=view.register_commands),
         ReadM(register_commands=view.register_commands),
         MangaNato(register_commands=view.register_commands),
+        MangaDex(register_commands=view.register_commands),
+        MangaDexIT(register_commands=view.register_commands),
         MangaWorld(register_commands=view.register_commands),
         MangaWorldAdult(register_commands=view.register_commands),
         Manhwax(register_commands=view.register_commands),
