@@ -1,4 +1,5 @@
 import re
+import json
 from typing import Any, AnyStr
 from bs4 import BeautifulSoup
 
@@ -11,6 +12,14 @@ def soupify(content: bytes or str):
     """
     return BeautifulSoup(content, 'html.parser')
 
+def jsonify(content: bytes or str) -> dict:
+    """
+    Parse JSON
+    :param content: JSON
+    :return: dict
+    """
+    return json.loads(content)
+
 
 def find(callback: callable, array: list) -> bool:
     """
@@ -21,18 +30,14 @@ def find(callback: callable, array: list) -> bool:
     """
     return True if next((x for x in array if callback(x)), None) is not None else False
 
-
-def find_index(callback: callable, array: list) -> int:
+def find_element(callback: callable, array: list):
     """
-    Find the index of a element in array that verify a callback
+    Find element in array that verify a callback
     :param callback: function
     :param array: list to search
-    :return: Element's index if the element is present, -1 instead
+    :return: Element is present, None instead
     """
-    for index, x in enumerate(array):
-        if callback(x):
-            return index
-    return -1
+    return next((x for x in array if callback(x)), None)
 
 
 def confront(key: str, a: Any, b: Any) -> bool:
