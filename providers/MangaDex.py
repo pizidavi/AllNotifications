@@ -40,8 +40,10 @@ class MangaDex(ComicProvider):
                 continue
             managed_manga.add(manga.get('id', ''))
 
+            manga_titles = manga.get('attributes', {}).get('title', {})
+
             elements.append(ComicElement(
-                title=manga.get('attributes', {}).get('title', {}).get('en', '') or 'No title',
+                title=manga_titles.get('en', '') or (list(manga_titles.items()) or [('', '')])[0][1],
                 url=f'{self.BASE_URL}/title/{manga.get("id", "")}',
                 number=chapter.get('chapter', '') or '0',
             ))
