@@ -20,7 +20,7 @@ class MangaDex(ComicProvider):
         super().__init__(**kwargs)
 
     def updates_request(self) -> Request:
-        return get(f'{self.API_URL}/chapter?includes[]=manga&translatedLanguage[]={self.LANG}&order[updatedAt]=desc')
+        return get(f'{self.API_URL}/chapter?includes[]=manga&translatedLanguage[]={self.LANG}&order[publishAt]=desc')
 
     def updates_parser(self, response) -> list[ComicElement]:
         document = jsonify(response)
@@ -28,6 +28,7 @@ class MangaDex(ComicProvider):
         data = document.get('data', [])
 
         elements = []
+        managed_manga = set()
         for chapter in data:
             manga = find_element(
                 lambda x: x.get('type', '') == 'manga',
@@ -35,10 +36,14 @@ class MangaDex(ComicProvider):
             )
             chapter = chapter.get('attributes', {})
 
+            if manga.get('id', '') in managed_manga:
+                continue
+            managed_manga.add(manga.get('id', ''))
+
             elements.append(ComicElement(
-                title=manga.get('attributes', {}).get('title', {}).get('en', ''),
+                title=manga.get('attributes', {}).get('title', {}).get('en', '') or 'No title',
                 url=f'{self.BASE_URL}/title/{manga.get("id", "")}',
-                number=chapter.get('chapter', ''),
+                number=chapter.get('chapter', '') or '0',
             ))
         return elements
 
