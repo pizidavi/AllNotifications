@@ -12,6 +12,7 @@ from controls.View import View
 from providers import BaseProvider
 from providers.MReader import MReader
 from providers.ReadM import ReadM
+from providers.MangaDemon import MangaDemon
 from providers.MangaNato import MangaNato
 from providers.MangaDex import MangaDex, MangaDexIT
 from providers.MangaWorld import MangaWorld
@@ -84,6 +85,7 @@ if __name__ == '__main__':
         MReader(register_commands=view.register_commands),
         ReadM(register_commands=view.register_commands),
         MangaNato(register_commands=view.register_commands),
+        MangaDemon(register_commands=view.register_commands),
         MangaDex(register_commands=view.register_commands),
         MangaDexIT(register_commands=view.register_commands),
         MangaWorld(register_commands=view.register_commands),
