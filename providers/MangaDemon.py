@@ -7,7 +7,7 @@ from providers import ComicProvider
 
 class MangaDemon(ComicProvider):
 
-    BASE_URL = 'https://demoncomics.org'
+    BASE_URL = 'https://demonreader.org/'
     NAME = 'MangaDemon'
     LANG = 'en'
     ICON = '👿'
