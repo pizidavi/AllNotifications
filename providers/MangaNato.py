@@ -23,9 +23,20 @@ class MangaNato(ComicProvider):
             anchor = entry.find(class_='item-title').find('a')
             title = anchor.text.strip().replace("’", "'")
             href = anchor.get('href')
-            chapter = entry.find(class_='item-chapter')
+
+            chapters = entry.find_all(class_='item-chapter')
+            if len(chapters) == 0:
+                continue
+
+            chapter = None
+            for c in chapters:
+                if c.text.strip().endswith(' ago'):
+                    chapter = c
+                    break
+
             if chapter is None:
                 continue
+
             number = chapter.find('a').text.removeprefix('Chapter ').split(':')[0]
 
             elements.append(
