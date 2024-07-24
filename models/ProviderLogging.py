@@ -31,7 +31,8 @@ class ProviderLogging:
             self.__log[level] = {}
         if id_ not in self.__log[level]:
             self.__log[level][id_] = 1
-            return
+            if not force_send:
+                return
         if isinstance(self.__log[level][id_], bool):  # message already sent
             return
 
@@ -59,24 +60,24 @@ class ProviderLogging:
 
     def debug(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(DEBUG, id_, message) """
-        self.log(DEBUG, id_, f'*DEBUG*\nSource: %s\nReason: {message}' % self.__provider, force_send)
+        self.log(DEBUG, id_, f'*DEBUG*\nSource: {self.__provider}\nReason: {message}', force_send)
 
     def info(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(INFO, id_, message) """
-        self.log(INFO, id_, f'*INFO*\nSource: %s\nReason: {message}' % self.__provider, force_send)
+        self.log(INFO, id_, f'*INFO*\nSource: {self.__provider}\nReason: {message}', force_send)
 
     def warning(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(WARNING, id_, message) """
-        self.log(WARNING, id_, f'⚠️*WARNING*\nSource: %s\nReason: {message}' % self.__provider, force_send)
+        self.log(WARNING, id_, f'⚠️*WARNING*\nSource: {self.__provider}\nReason: {message}', force_send)
 
     def error(self, id_: str, message: str, force_send: bool = False) -> None:
         """ Alias of .log(ERROR, id_, message) """
-        self.log(ERROR, id_, f'⛔ *ERROR*\nSource: %s\nReason: {message}' % self.__provider, force_send)
+        self.log(ERROR, id_, f'⛔ *ERROR*\nSource: {self.__provider}\nReason: {message}', force_send)
 
     def critical(self, id_: str, message: str, force_send: bool = True) -> None:
         """ Alias of .log(CRITICAL, id_, message, True) """
-        self.log(CRITICAL, id_, f'⛔ *CRITICAL*\nSource: %s\nReason: {message}' % self.__provider, force_send)
+        self.log(CRITICAL, id_, f'⛔ *CRITICAL*\nSource: {self.__provider}\nReason: {message}', force_send)
 
     def ok(self, id_: str, message: str = None):
         """ Alias of .remove(id_, message) """
-        self.remove(id_, f'✅ *OK*\nSource: %s%s' % (self.__provider, f'\nReason: {message}' if message else ''))
+        self.remove(id_, f'✅ *OK*\nSource: {self.__provider}\nReason: {message if message else ""}')
