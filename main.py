@@ -82,12 +82,12 @@ if __name__ == '__main__':
     view = View()
 
     PROVIDERS: list[BaseProvider] = [
-        # MReader(register_commands=view.register_commands),
+        MReader(register_commands=view.register_commands),
         MangaDemon(register_commands=view.register_commands),
         Comick(register_commands=view.register_commands),
         MangaNato(register_commands=view.register_commands),
-        MangaDex(register_commands=view.register_commands),
-        MangaDexIT(register_commands=view.register_commands),
+        # MangaDex(register_commands=view.register_commands),
+        # MangaDexIT(register_commands=view.register_commands),
         MangaWorld(register_commands=view.register_commands),
         # MangaWorldAdult(register_commands=view.register_commands),
         # Manhwax(register_commands=view.register_commands),
