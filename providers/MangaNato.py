@@ -35,7 +35,7 @@ class MangaNato(ComicProvider):
                     break
 
             if chapter is None:
-                continue
+                chapter = chapters[0]
 
             number = chapter.find('a').text.removeprefix('Chapter ').split(':')[0]
 

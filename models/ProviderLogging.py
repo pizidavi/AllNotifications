@@ -80,4 +80,5 @@ class ProviderLogging:
 
     def ok(self, id_: str, message: str = None):
         """ Alias of .remove(id_, message) """
-        self.remove(id_, f'✅ *OK*\nSource: {self.__provider}\nReason: {message if message else ""}')
+        self.remove(id_, f'✅ *OK*\nSource: {self.__provider}\n{f"Reason: {message}" if message else ""}')
+

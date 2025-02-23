@@ -84,7 +84,7 @@ if __name__ == '__main__':
     PROVIDERS: list[BaseProvider] = [
         MReader(register_commands=view.register_commands),
         MangaDemon(register_commands=view.register_commands),
-        Comick(register_commands=view.register_commands),
+        # Comick(register_commands=view.register_commands),
         MangaNato(register_commands=view.register_commands),
         # MangaDex(register_commands=view.register_commands),
         # MangaDexIT(register_commands=view.register_commands),

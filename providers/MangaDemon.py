@@ -14,6 +14,9 @@ class MangaDemon(ComicProvider):
     LANG = 'en'
     ICON = '👿'
 
+    def updates_request(self):
+        return get(f'{self.BASE_URL}/lastupdates.php?list=1')
+
     def updates_parser(self, response: str) -> list[ComicElement]:
         document = soupify(response)
 
