@@ -6,7 +6,7 @@ from providers import ComicProvider
 
 class MangaNato(ComicProvider):
 
-    BASE_URL = 'https://manganato.com'
+    BASE_URL = 'https://www.natomanga.com'
     NAME = 'MangaNato'
     LANG = 'en'
     ICON = '📘'
