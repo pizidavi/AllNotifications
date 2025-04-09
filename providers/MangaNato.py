@@ -13,18 +13,21 @@ class MangaNato(ComicProvider):
 
     def updates_parser(self, response: str) -> list[ComicElement]:
         document = soupify(response)
-        entries = document.find(class_='panel-content-homepage')
+        entries = document.find(id='contentstory')
         if entries is None:
             raise NotFoundException()
-        entries = entries.find_all(class_='content-homepage-item')
+        entries = entries.find_all(class_='itemupdate')
+        if len(entries) == 0:
+            raise NotFoundException()
 
         elements = []
         for entry in entries:
-            anchor = entry.find(class_='item-title').find('a')
+            anchor = entry.find('h3').find('a')
+
             title = anchor.text.strip().replace("’", "'")
             href = anchor.get('href')
 
-            chapters = entry.find_all(class_='item-chapter')
+            chapters = entry.find_all('span')
             if len(chapters) == 0:
                 continue
 
