@@ -9,7 +9,7 @@ from providers import ComicProvider
 
 class MangaWorld(ComicProvider):
 
-    BASE_URL = 'https://www.mangaworld.so'
+    BASE_URL = 'https://www.mangaworld.cx'
     NAME = 'MangaWorld'
     LANG = 'it'
     ICON = '📕'
