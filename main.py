@@ -1,6 +1,7 @@
 import os
 import time
 import asyncio
+import requests
 from dotenv import load_dotenv
 from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -67,6 +68,15 @@ async def main():
 
                     managed_elements = provider.manage_elements(elements, list(history[type_]))
                     history[type_].update(managed_elements)
+    
+    # Health check
+    if os.getenv('ENV', 'prod') != 'dev':
+        try:
+            response = requests.head(os.getenv('HEALTH_CHECK_WEBHOOK_URL'), timeout=60)
+            response.raise_for_status()
+        except Exception as e:
+            return f"Health check failed: {e}"
+
     del history
 
 
@@ -102,11 +112,13 @@ if __name__ == '__main__':
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(safe_main, 'interval', minutes=10)
-    scheduler.start()
+    if os.getenv('ENV', 'prod') != 'dev':
+        scheduler.start()
 
     try:
         loop.run_until_complete(safe_main())  # First run
-        loop.run_forever()
+        if os.getenv('ENV', 'prod') != 'dev':
+            loop.run_forever()
     except (KeyboardInterrupt, SystemExit):
         print('')
     except Exception as _:
