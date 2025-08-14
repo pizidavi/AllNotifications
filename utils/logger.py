@@ -1,14 +1,14 @@
 import sys
 import logging
-import logging.handlers as handlers
+# import logging.handlers as handlers
 
 StreamHandler = logging.StreamHandler(sys.stdout)
 StreamHandler.setLevel(logging.DEBUG)
 StreamHandler.setFormatter(logging.Formatter('%(levelname)s:%(asctime)s: %(message)s'))
 
-FileHandler = handlers.RotatingFileHandler('syslog.log', maxBytes=200000, backupCount=1)
-FileHandler.setLevel(logging.WARNING)
-FileHandler.setFormatter(logging.Formatter('%(levelname)s:%(name)s:%(asctime)s:%(message)s'))
+# FileHandler = handlers.RotatingFileHandler('syslog.log', maxBytes=200000, backupCount=1)
+# FileHandler.setLevel(logging.WARNING)
+# FileHandler.setFormatter(logging.Formatter('%(levelname)s:%(name)s:%(asctime)s:%(message)s'))
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -21,7 +21,7 @@ def get_logger(name: str) -> logging.Logger:
     logger.propagate = False
     logger.setLevel(logging.DEBUG)
     logger.addHandler(StreamHandler)
-    logger.addHandler(FileHandler)
+    # logger.addHandler(FileHandler)
     return logger
 
 

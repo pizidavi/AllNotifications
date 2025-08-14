@@ -1,8 +1,10 @@
-.idea/
-__pycache__/
-
 .venv/
+__pycache__/
+.idea/
+.vscode/
+
+*.pyc
+*.log
 
 .env*
 !.env.sample
-*.log

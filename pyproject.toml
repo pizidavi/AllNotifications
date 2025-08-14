@@ -1,0 +1,17 @@
+[project]
+name = "all-notifications"
+version = "0.1.0"
+requires-python = "~=3.11.0"
+dependencies = [
+    "apscheduler~=3.6.3",
+    "asyncio~=3.4.3",
+    "beautifulsoup4==4.11.1",
+    "bs4~=0.0.1",
+    "dataclasses~=0.6",
+    "httpx==0.23.0",
+    "mysql-connector-python==8.0.29",
+    "python-dotenv==0.21.0",
+    "python-telegram-bot==13.14",
+    "requests>=2.32.4",
+    "tzlocal~=2.1",
+]
