@@ -2,7 +2,6 @@ from httpx import Request
 
 from utils.utils import jsonify, find_element
 from networks.Requests import get
-from networks.HttpClients import HttpClient, SeleniumClient
 from networks.exceptions import NotFoundException
 from models.Element import ComicElement
 from providers import ComicProvider
